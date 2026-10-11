@@ -1,0 +1,47 @@
+## Inspiration
+AI coding tools are great at *suggesting* code, but the work doesn't end there. You copy the code, run it, hit an error, paste the stack trace back, and repeat. We wanted an agent that does that whole loop itself. The idea behind **Forgekit** is simple: **write it, run it, fix it.**
+We also wanted every change to be trustworthy. Instead of reviewing AI guesswork, a developer should see a clean, tested, reversible diff.
+
+## What it does
+Give Forgekit a task such as "add login to this app." It then:
+1. Writes the code with a Nemotron model.
+2. Runs it in an isolated sandbox.
+3. Reads the errors and test failures.
+4. Fixes its own code and repeats until the tests pass.
+Every step is logged, and every change is committed to git, so it can be reviewed or rolled back at any time.
+
+## How we built it
+- **Model:** Nemotron, used through [API / hosting platform].
+- **Agent loop:** a Python controller that cycles through *plan → write → run → observe → fix*.
+- **Sandbox:** [Docker container / other] so generated code never touches the host machine.
+- **Verification:** the agent runs the project's tests [and any tests it writes itself] after every change.
+- **Version control:** each iteration is saved as a git commit, which makes the full history reviewable and reversible.
+- **Interface:** [CLI / web UI / other].
+We cap the loop at a maximum number of attempts \( N \), so the agent can't run forever. If the success rate over \( n \) tasks is
+$$ \text{success rate} = \frac{\text{tasks with all tests passing}}{n} $$
+we can measure how well the agent performs. [Add your real result here, for example "Forgekit solved X of Y test tasks."]
+
+## Challenges we ran into
+- **Infinite fix loops:** the model sometimes repeated the same failed fix. We added a limit on attempts and fed the full error history back into each prompt.
+- **Safe execution:** running AI-written code is risky, so we had to isolate it properly in a sandbox.
+- **Noisy error output:** long stack traces overloaded the prompt, so we trimmed them down to the most useful lines.
+- **[Your own challenge]:** [describe it].
+
+## Accomplishments that we're proud of
+- A working end-to-end loop where the agent fixes its own mistakes without manual copy-pasting.
+- Every change is logged and reversible through git.
+- [Your own accomplishment].
+
+## What we learned
+- Agents get far more reliable when they get feedback from real test results instead of just generating code once.
+- Prompt design and error formatting matter as much as model quality.
+- Sandboxing and logging are not optional features for coding agents. They are what makes the output trustworthy.
+- [Your own lesson].
+
+## What's next for Forgekit
+- Support for more languages and frameworks.
+- Smarter test generation for projects that have none.
+- [Optional: performance-focused mode that benchmarks and optimizes code, not just fixes it.]
+
+## Built with
+Python, Nemotron, [Docker], Git, [other tools]
